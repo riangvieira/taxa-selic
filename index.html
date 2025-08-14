@@ -7,7 +7,7 @@
     <style>
         body {
             font-family: Arial, sans-serif;
-            background-color: #EBE4DC; /* Cor de fundo principal */
+            background-color: #941B22; /* Fundo vermelho */
             color: #333;
             margin: 0;
             padding: 20px;
@@ -17,7 +17,7 @@
             min-height: 100vh;
         }
         .container {
-            background-color: #f9f6f3;
+            background-color: #EBE4DC; /* Fundo do container */
             border: 1px solid #ddd;
             border-radius: 8px;
             padding: 20px 30px;
@@ -26,20 +26,20 @@
             text-align: center;
         }
         h1 {
-            color: #941B22; /* Cor de destaque para o título */
+            color: #941B22;
             margin-bottom: 5px;
             font-size: 1.8em;
         }
         .selic-value {
             font-size: 3em;
             font-weight: bold;
-            color: #941B22; /* Cor de destaque para o valor */
+            color: #941B22;
             margin: 10px 0 20px;
         }
         h2 {
             font-size: 1.2em;
             color: #555;
-            border-bottom: 2px solid #941B22; /* Cor de destaque para a borda */
+            border-bottom: 2px solid #941B22;
             padding-bottom: 5px;
             margin-top: 30px;
             text-align: left;
@@ -79,7 +79,6 @@
         const selicInfo = document.getElementById('selic-info');
         const apiUrl = 'https://api.bcb.gov.br/dados/serie/bcdata.sgs.432/dados/ultimos/5?formato=json';
 
-        // Função para formatar a data
         function formatDate(dateString) {
             const [day, month, year] = dateString.split('/');
             return `${day}/${month}/${year}`;
@@ -101,7 +100,6 @@
                         <ul>
                     `;
 
-                    // Exibe o histórico de variações
                     for (let i = data.length - 1; i >= 0; i--) {
                         const rate = data[i];
                         const date = formatDate(rate.data);
