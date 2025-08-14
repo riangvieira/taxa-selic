@@ -8,7 +8,7 @@
         body {
             font-family: Arial, sans-serif;
             background-color: #941B22; /* Fundo vermelho */
-            color: #333;
+            color: #EBE4DC; /* Cor do texto principal */
             margin: 0;
             padding: 20px;
             display: flex;
@@ -17,7 +17,7 @@
             min-height: 100vh;
         }
         .container {
-            background-color: #941B22; /* Fundo do container */
+            background-color: #EBE4DC; /* Fundo claro do container */
             border: 1px solid #ddd;
             border-radius: 8px;
             padding: 20px 30px;
@@ -51,12 +51,15 @@
             text-align: left;
         }
         li {
-            background-color: #941B22;
+            background-color: #f9f6f3;
             padding: 10px;
             border-radius: 5px;
             margin-bottom: 8px;
             display: flex;
             justify-content: space-between;
+        }
+        li span, li strong {
+            color: #333;
         }
         .loading, .error {
             text-align: center;
@@ -79,6 +82,7 @@
         const selicInfo = document.getElementById('selic-info');
         const apiUrl = 'https://api.bcb.gov.br/dados/serie/bcdata.sgs.432/dados/ultimos/5?formato=json';
 
+        // Função para formatar a data
         function formatDate(dateString) {
             const [day, month, year] = dateString.split('/');
             return `${day}/${month}/${year}`;
@@ -100,6 +104,7 @@
                         <ul>
                     `;
 
+                    // Exibe o histórico de variações
                     for (let i = data.length - 1; i >= 0; i--) {
                         const rate = data[i];
                         const date = formatDate(rate.data);
@@ -129,5 +134,3 @@
 
 </body>
 </html>
-
-
