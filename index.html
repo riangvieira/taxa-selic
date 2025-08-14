@@ -7,8 +7,8 @@
     <style>
         body {
             font-family: Arial, sans-serif;
-            background-color: #941B22; /* Fundo vermelho */
-            color: #EBE4DC; /* Cor do texto principal */
+            background-color: #EBE4DC; /* Fundo claro */
+            color: #333;
             margin: 0;
             padding: 20px;
             display: flex;
@@ -17,8 +17,8 @@
             min-height: 100vh;
         }
         .container {
-            background-color: #EBE4DC; /* Fundo claro do container */
-            border: 1px solid #ddd;
+            background-color: #941B22; /* Fundo vermelho do container */
+            border: 1px solid #7A151A;
             border-radius: 8px;
             padding: 20px 30px;
             box-shadow: 0 4px 8px rgba(0,0,0,0.1);
@@ -26,20 +26,20 @@
             text-align: center;
         }
         h1 {
-            color: #941B22;
+            color: #EBE4DC; /* Cor de destaque para o título */
             margin-bottom: 5px;
             font-size: 1.8em;
         }
         .selic-value {
             font-size: 3em;
             font-weight: bold;
-            color: #941B22;
+            color: #EBE4DC; /* Cor de destaque para o valor */
             margin: 10px 0 20px;
         }
         h2 {
             font-size: 1.2em;
-            color: #555;
-            border-bottom: 2px solid #941B22;
+            color: #EBE4DC; /* Cor do subtítulo */
+            border-bottom: 2px solid #EBE4DC; /* Borda clara */
             padding-bottom: 5px;
             margin-top: 30px;
             text-align: left;
@@ -51,19 +51,17 @@
             text-align: left;
         }
         li {
-            background-color: #f9f6f3;
+            background-color: #7A151A; /* Cor de fundo dos itens da lista */
+            color: #EBE4DC; /* Cor do texto dos itens da lista */
             padding: 10px;
             border-radius: 5px;
             margin-bottom: 8px;
             display: flex;
             justify-content: space-between;
         }
-        li span, li strong {
-            color: #333;
-        }
         .loading, .error {
             text-align: center;
-            color: #EBE4DC;
+            color: #333;
             font-size: 1.2em;
         }
     </style>
