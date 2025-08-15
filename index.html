@@ -1,135 +1,85 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Taxa Selic</title>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            background-color: #941B22; /* Fundo claro */
-            color: #333;
-            margin: 0;
-            padding: 20px;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            min-height: 100vh;
-        }
-        .container {
-            background-color: #941B22; /* Fundo vermelho do container */
-            border: 1px solid #7A151A;
-            border-radius: 8px;
-            padding: 20px 30px;
-            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
-            max-width: 400px;
-            text-align: center;
-        }
-        h1 {
-            color: #EBE4DC; /* Cor de destaque para o título */
-            margin-bottom: 5px;
-            font-size: 1.8em;
-        }
-        .selic-value {
-            font-size: 3em;
-            font-weight: bold;
-            color: #EBE4DC; /* Cor de destaque para o valor */
-            margin: 10px 0 20px;
-        }
-        h2 {
-            font-size: 1.2em;
-            color: #EBE4DC; /* Cor do subtítulo */
-            border-bottom: 2px solid #EBE4DC; /* Borda clara */
-            padding-bottom: 5px;
-            margin-top: 30px;
-            text-align: left;
-        }
-        ul {
-            list-style-type: none;
-            padding: 0;
-            margin: 0;
-            text-align: left;
-        }
-        li {
-            background-color: #941B22; /* Cor de fundo dos itens da lista */
-            color: #EBE4DC; /* Cor do texto dos itens da lista */
-            padding: 10px;
-            border-radius: 5px;
-            margin-bottom: 8px;
-            display: flex;
-            justify-content: space-between;
-        }
-        .loading, .error {
-            text-align: center;
-            color: #333;
-            font-size: 1.2em;
-        }
-    </style>
+  <meta charset="UTF-8">
+  <title>Taxa Selic (últimos 2 dias úteis)</title>
+  <style>
+    body { 
+      font-family: Arial, sans-serif; 
+      padding: 1em; 
+      background-color: #941B22; 
+      color: #EBE4DC;
+    }
+    h1 {
+      color: #EBE4DC;
+    }
+    table { 
+      border-collapse: collapse; 
+      width: 50%; 
+      margin-top: 1em; 
+      background-color: transparent;
+    }
+    th, td { 
+      border: 1px solid #EBE4DC; 
+      padding: 8px; 
+      text-align: center; 
+      color: #EBE4DC;
+    }
+    th { 
+      background-color: rgba(235, 228, 220, 0.2); 
+    }
+  </style>
 </head>
 <body>
+  <h1>Taxa Selic Over - Últimos 2 dias úteis</h1>
+  <table id="selic-table">
+    <thead>
+      <tr>
+        <th>Data</th>
+        <th>Taxa Selic (a.d.)</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr><td colspan="2">Carregando...</td></tr>
+    </tbody>
+  </table>
 
-    <div class="container">
-        <h1>Taxa Selic (Meta)</h1>
-        <div id="selic-info">
-            <div class="loading">Carregando dados...</div>
-        </div>
-    </div>
+  <script>
+    async function fetchSelic() {
+      const endDate = new Date();
+      const start = new Date(endDate);
+      start.setDate(endDate.getDate() - 5); // dias anteriores (garante 2 úteis)
 
-<script>
-    document.addEventListener('DOMContentLoaded', () => {
-        const selicInfo = document.getElementById('selic-info');
-        const apiUrl = 'https://api.bcb.gov.br/dados/serie/bcdata.sgs.432/dados/ultimos/5?formato=json';
+      const formatDate = d => d.toISOString().split('T')[0];
 
-        // Função para formatar a data
-        function formatDate(dateString) {
-            const [day, month, year] = dateString.split('/');
-            return `${day}/${month}/${year}`;
+      const url = `https://api.bcb.gov.br/dados/serie/bcdata.sgs.1178/dados?formato=json&dataInicial=${formatDate(start)}&dataFinal=${formatDate(endDate)}`;
+      try {
+        const resp = await fetch(url);
+        const data = await resp.json();
+
+        if (!data.length) {
+          throw new Error('Nenhum dado retornado.');
         }
 
-        fetch(apiUrl)
-            .then(response => {
-                if (!response.ok) {
-                    throw new Error('Não foi possível obter os dados da API.');
-                }
-                return response.json();
-            })
-            .then(data => {
-                if (data && data.length > 0) {
-                    const latestRate = data[data.length - 1];
-                    let htmlContent = `
-                        <div class="selic-value">${parseFloat(latestRate.valor).toFixed(2).replace('.', ',')}% a.a.</div>
-                        <h2>Últimas Variações</h2>
-                        <ul>
-                    `;
+        // Usar os dois últimos registros disponíveis (últimos 2 úteis)
+        const latest = data.slice(-2);
 
-                    // Exibe o histórico de variações
-                    for (let i = data.length - 1; i >= 0; i--) {
-                        const rate = data[i];
-                        const date = formatDate(rate.data);
-                        const value = parseFloat(rate.valor).toFixed(2).replace('.', ',');
-                        
-                        htmlContent += `
-                            <li>
-                                <span>${date}:</span>
-                                <strong>${value}%</strong>
-                            </li>
-                        `;
-                    }
+        const tbody = document.querySelector('#selic-table tbody');
+        tbody.innerHTML = '';
+        latest.forEach(entry => {
+          const tr = document.createElement('tr');
+          const date = entry.data;
+          const rate = entry.valor;
+          tr.innerHTML = `<td>${date}</td><td>${parseFloat(rate).toFixed(6)}%</td>`;
+          tbody.appendChild(tr);
+        });
+      } catch (err) {
+        const tbody = document.querySelector('#selic-table tbody');
+        tbody.innerHTML = `<tr><td colspan="2">Erro ao obter dados: ${err.message}</td></tr>`;
+      }
+    }
 
-                    htmlContent += `</ul>`;
-                    selicInfo.innerHTML = htmlContent;
-
-                } else {
-                    selicInfo.innerHTML = '<div class="error">Dados da Selic não encontrados.</div>';
-                }
-            })
-            .catch(error => {
-                console.error('Erro ao buscar dados da Selic:', error);
-                selicInfo.innerHTML = '<div class="error">Ocorreu um erro ao carregar os dados. Tente novamente mais tarde.</div>';
-            });
-    });
-</script>
-
+    fetchSelic();
+  </script>
 </body>
 </html>
-
