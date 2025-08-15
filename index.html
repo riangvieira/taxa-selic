@@ -48,9 +48,14 @@
     async function fetchSelic() {
       const endDate = new Date();
       const start = new Date(endDate);
-      start.setDate(endDate.getDate() - 5); // dias anteriores (garante 2 úteis)
+      start.setDate(endDate.getDate() - 15); // busca maior intervalo para garantir
 
-      const formatDate = d => d.toISOString().split('T')[0];
+      const formatDate = d => {
+        const dia = String(d.getDate()).padStart(2, '0');
+        const mes = String(d.getMonth() + 1).padStart(2, '0');
+        const ano = d.getFullYear();
+        return `${dia}/${mes}/${ano}`;
+      };
 
       const url = `https://api.bcb.gov.br/dados/serie/bcdata.sgs.1178/dados?formato=json&dataInicial=${formatDate(start)}&dataFinal=${formatDate(endDate)}`;
       try {
@@ -61,7 +66,7 @@
           throw new Error('Nenhum dado retornado.');
         }
 
-        // Usar os dois últimos registros disponíveis (últimos 2 úteis)
+        // Últimos 2 registros válidos
         const latest = data.slice(-2);
 
         const tbody = document.querySelector('#selic-table tbody');
