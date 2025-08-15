@@ -48,7 +48,7 @@
     async function fetchSelic() {
       const endDate = new Date();
       const start = new Date(endDate);
-      start.setDate(endDate.getDate() - 15); // busca maior intervalo para garantir
+      start.setDate(endDate.getDate() - 15); // intervalo maior
 
       const formatDate = d => {
         const dia = String(d.getDate()).padStart(2, '0');
@@ -57,16 +57,19 @@
         return `${dia}/${mes}/${ano}`;
       };
 
-      const url = `https://api.bcb.gov.br/dados/serie/bcdata.sgs.1178/dados?formato=json&dataInicial=${formatDate(start)}&dataFinal=${formatDate(endDate)}`;
+      const bcbUrl = `https://api.bcb.gov.br/dados/serie/bcdata.sgs.1178/dados?formato=json&dataInicial=${formatDate(start)}&dataFinal=${formatDate(endDate)}`;
+      const proxyUrl = `https://api.allorigins.win/get?url=${encodeURIComponent(bcbUrl)}`;
+
       try {
-        const resp = await fetch(url);
-        const data = await resp.json();
+        const resp = await fetch(proxyUrl);
+        const json = await resp.json();
+        const data = JSON.parse(json.contents);
 
         if (!data.length) {
           throw new Error('Nenhum dado retornado.');
         }
 
-        // Últimos 2 registros válidos
+        // Últimos 2 registros disponíveis
         const latest = data.slice(-2);
 
         const tbody = document.querySelector('#selic-table tbody');
