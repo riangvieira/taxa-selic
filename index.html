@@ -2,7 +2,7 @@
 <html lang="pt-BR">
 <head>
   <meta charset="UTF-8">
-  <title>Taxa Selic (últimos 2 dias úteis)</title>
+  <title>Taxa Selic (últimos registros)</title>
   <style>
     body { 
       font-family: Arial, sans-serif; 
@@ -31,12 +31,12 @@
   </style>
 </head>
 <body>
-  <h1>Taxa Selic Over - Últimos 2 dias úteis</h1>
+  <h1>Taxa Selic - Últimos registros</h1>
   <table id="selic-table">
     <thead>
       <tr>
-        <th>Data</th>
-        <th>Taxa Selic (a.d.)</th>
+        <th>Nome</th>
+        <th>Valor</th>
       </tr>
     </thead>
     <tbody>
@@ -46,39 +46,24 @@
 
   <script>
     async function fetchSelic() {
-      const endDate = new Date();
-      const start = new Date(endDate);
-      start.setDate(endDate.getDate() - 15); // intervalo maior
-
-      const formatDate = d => {
-        const dia = String(d.getDate()).padStart(2, '0');
-        const mes = String(d.getMonth() + 1).padStart(2, '0');
-        const ano = d.getFullYear();
-        return `${dia}/${mes}/${ano}`;
-      };
-
-      const bcbUrl = `https://api.bcb.gov.br/dados/serie/bcdata.sgs.1178/dados?formato=json&dataInicial=${formatDate(start)}&dataFinal=${formatDate(endDate)}`;
-      const proxyUrl = `https://api.allorigins.win/get?url=${encodeURIComponent(bcbUrl)}`;
+      const url = `https://brasilapi.com.br/api/taxas/v1`;
 
       try {
-        const resp = await fetch(proxyUrl);
-        const json = await resp.json();
-        const data = JSON.parse(json.contents);
+        const resp = await fetch(url);
+        const data = await resp.json();
 
-        if (!data.length) {
-          throw new Error('Nenhum dado retornado.');
+        // Filtra apenas "Selic"
+        const selicData = data.filter(item => item.nome.toLowerCase().includes('selic'));
+
+        if (!selicData.length) {
+          throw new Error('Nenhum dado de Selic encontrado.');
         }
-
-        // Últimos 2 registros disponíveis
-        const latest = data.slice(-2);
 
         const tbody = document.querySelector('#selic-table tbody');
         tbody.innerHTML = '';
-        latest.forEach(entry => {
+        selicData.forEach(entry => {
           const tr = document.createElement('tr');
-          const date = entry.data;
-          const rate = entry.valor;
-          tr.innerHTML = `<td>${date}</td><td>${parseFloat(rate).toFixed(6)}%</td>`;
+          tr.innerHTML = `<td>${entry.nome}</td><td>${parseFloat(entry.valor).toFixed(2)}%</td>`;
           tbody.appendChild(tr);
         });
       } catch (err) {
